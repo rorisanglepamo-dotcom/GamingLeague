@@ -33,12 +33,7 @@
         <!-- Hero Section -->
         <section class="hero">
             <div class="hero-content">
-                <h1 class="hero-heading">
-                    READY TO<br>
-                    COMPETE,<br>
-                    PLAY AND<br>
-                    WIN BIG
-                </h1>
+                <h1 class="hero-heading" id="heroHeading"></h1>
                 <p class="hero-sub">
                     TEST YOUR SKILLS<br>
                     REGISTER NOW
@@ -51,4 +46,48 @@
         </section>
 
     </body>
+
+    <script>
+        const lines = ["READY TO", "COMPETE,", "PLAY AND", "WIN BIG"];
+        const heading = document.getElementById("heroHeading");
+
+        let lineIndex = 0;
+        let charIndex = 0;
+
+        function typeLine() {
+            if (lineIndex >= lines.length) {
+                // All lines done — remove cursor blink class, leave static cursor
+                heading.classList.remove("typing");
+                return;
+            }
+
+            const currentLine = lines[lineIndex];
+
+            if (charIndex < currentLine.length) {
+                // Still typing current line — add one char
+                const span = heading.querySelectorAll("span.line")[lineIndex];
+                span.textContent += currentLine[charIndex];
+                charIndex++;
+                setTimeout(typeLine, 80);
+            } else {
+                // Line finished — move to next line after a short pause
+                lineIndex++;
+                charIndex = 0;
+
+                if (lineIndex < lines.length) {
+                    const newSpan = document.createElement("span");
+                    newSpan.classList.add("line");
+                    heading.appendChild(newSpan);
+                }
+                setTimeout(typeLine, 180);
+            }
+        }
+
+        // Kick off — create first line span and start typing
+        heading.classList.add("typing");
+        const firstSpan = document.createElement("span");
+        firstSpan.classList.add("line");
+        heading.appendChild(firstSpan);
+        setTimeout(typeLine, 400);
+    </script>
 </html>

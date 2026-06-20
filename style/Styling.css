@@ -66,7 +66,7 @@ html, body {
 .hero {
     position: relative;
     width: 100%;
-    min-height: 520px;
+    min-height: calc(100vh - 57px); /* fills viewport minus navbar height */
     background-image: url('../images/MainBG-DualSense.jpg');
     background-size: cover;
     background-position: center;
@@ -114,6 +114,25 @@ html, body {
     margin-bottom: 16px;
 }
 
+/* Each typed line sits on its own row */
+.hero-heading .line {
+    display: block;
+}
+
+/* Blinking cursor after the last line while typing */
+.hero-heading.typing .line:last-child::after {
+    content: '|';
+    display: inline-block;
+    margin-left: 4px;
+    animation: blink 1.4s step-end infinite;
+    text-shadow: none;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+}
+
 .hero-sub {
     font-size: clamp(1.1rem, 2.2vw, 1.6rem);
     font-weight: 900;
@@ -154,9 +173,10 @@ html, body {
 }
 
 .btn-play:hover {
-    background-color: #fff;
-    color: #000;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+
+    color: #ffffff;
+    background-color: #5bc8f5;
+    box-shadow: 0 0 8px #5bc8f5, 0 0 20px rgba(91, 200, 245, 0.6);
 }
 
 .btn-icon {
@@ -169,4 +189,83 @@ html, body {
     border-radius: 50%;
     font-size: 0.85rem;
     flex-shrink: 0;
+}
+
+/* =====================
+   Login Card
+   ===================== */
+.login-card {
+    position: relative;
+    z-index: 2;
+    background-color: rgba(30, 65, 80, 0.88);
+    border-radius: 16px;
+    padding: 36px 40px 40px;
+    margin-left: 48px;
+    width: 380px;
+    backdrop-filter: blur(6px);
+}
+
+.login-title {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 900;
+    letter-spacing: 3px;
+    color: #fff;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #fff;
+    text-transform: uppercase;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 6px;
+    background-color: #fff;
+    color: #000;
+    font-size: 0.95rem;
+    font-family: inherit;
+    outline: none;
+    transition: box-shadow 0.2s;
+}
+
+.form-group input:hover {
+    box-shadow: 0 0 0 3px rgba(91, 200, 245, 0.4);
+}
+
+.form-group input:focus {
+    box-shadow: 0 0 0 3px rgba(91, 200, 245, 0.6);
+}
+
+/* Confirm button override — same pill style, but dark text on white */
+.btn-confirm {
+    background-color: #fff;
+    color: #000;
+    border-color: #000;
+}
+
+.btn-confirm:hover {
+    background-color: #5bc8f5;
+    color: #fff;
+    border-color: #5bc8f5;
+    box-shadow: 0 0 16px rgba(91, 200, 245, 0.7);
 }
