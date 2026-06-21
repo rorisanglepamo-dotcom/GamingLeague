@@ -60,6 +60,13 @@ html, body {
     box-shadow: 0 0 8px #5bc8f5, 0 0 20px rgba(91, 200, 245, 0.6);
 }
 
+/* Logout link — red glow on hover */
+.nav-logout:hover {
+    color: #fff !important;
+    background-color: rgba(220, 50, 50, 0.85) !important;
+    box-shadow: 0 0 8px rgba(220, 50, 50, 0.9), 0 0 20px rgba(220, 50, 50, 0.5) !important;
+}
+
 /* =====================
    Hero Section
    ===================== */
@@ -268,4 +275,101 @@ html, body {
     color: #fff;
     border-color: #5bc8f5;
     box-shadow: 0 0 16px rgba(91, 200, 245, 0.7);
+}
+
+/* =====================
+   Hub Page
+   ===================== */
+
+/* User greeting in navbar */
+.nav-user {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+    color: #000;
+    text-transform: uppercase;
+}
+
+.user-greeting {
+    font-weight: 700;
+}
+
+.user-avatar {
+    font-size: 1.6rem;
+    line-height: 1;
+    color: #000;
+}
+
+/* Hub hero — centers the grid */
+.hub-hero {
+    justify-content: center;
+    align-items: center;
+}
+
+/* 2x2 grid of cards */
+.hub-grid {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    padding: 48px;
+    max-width: 780px;
+    width: 100%;
+}
+
+/* Individual hub card */
+.hub-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-color: rgba(30, 65, 80, 0.85);
+    backdrop-filter: blur(6px);
+    border-radius: 14px;
+    padding: 48px 32px;
+    color: #fff;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    line-height: 1.5;
+    transition: background-color 0.25s, box-shadow 0.25s, transform 0.2s, border-color 0.25s;
+    min-height: 140px;
+    border: 1px solid transparent;
+}
+
+.hub-card:hover {
+    background-color: rgba(91, 200, 245, 0.75);
+    box-shadow: 0 0 20px rgba(91, 200, 245, 0.5);
+    transform: translateY(-3px);
+}
+
+/* Per-card colour glows */
+.hub-green:hover {
+    background-color: rgba(0, 200, 80, 0.3);
+    box-shadow: 0 0 16px rgba(0, 200, 80, 0.7), 0 0 40px rgba(0, 200, 80, 0.3);
+    border: 1px solid rgba(0, 200, 80, 0.6);
+}
+
+.hub-blue:hover {
+    background-color: rgba(91, 200, 245, 0.3);
+    box-shadow: 0 0 16px rgba(91, 200, 245, 0.7), 0 0 40px rgba(91, 200, 245, 0.3);
+    border: 1px solid rgba(91, 200, 245, 0.6);
+}
+
+.hub-red:hover {
+    background-color: rgba(220, 50, 50, 0.3);
+    box-shadow: 0 0 16px rgba(220, 50, 50, 0.7), 0 0 40px rgba(220, 50, 50, 0.3);
+    border: 1px solid rgba(220, 50, 50, 0.6);
+}
+
+.hub-yellow:hover {
+    background-color: rgba(255, 210, 0, 0.25);
+    box-shadow: 0 0 16px rgba(255, 210, 0, 0.7), 0 0 40px rgba(255, 210, 0, 0.3);
+    border: 1px solid rgba(255, 210, 0, 0.6);
 }
