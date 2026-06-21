@@ -161,7 +161,7 @@ html, body {
     align-items: center;
     gap: 14px;
     padding: 14px 32px;
-    border: 3px solid #fff;
+    border: 1px solid #fff;
     border-radius: 50px;
     background-color: rgba(255, 255, 255, 0.12);
     color: #fff;
@@ -372,4 +372,117 @@ html, body {
     background-color: rgba(255, 210, 0, 0.25);
     box-shadow: 0 0 16px rgba(255, 210, 0, 0.7), 0 0 40px rgba(255, 210, 0, 0.3);
     border: 1px solid rgba(255, 210, 0, 0.6);
+}
+
+/* =====================
+   Hamburger Button
+   ===================== */
+.nav-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    z-index: 20;
+}
+
+.nav-toggle span {
+    display: block;
+    width: 26px;
+    height: 3px;
+    background-color: #000;
+    border-radius: 2px;
+    transition: transform 0.3s, opacity 0.3s;
+}
+
+/* Animate to X when open */
+.nav-toggle[aria-expanded="true"] span:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+}
+.nav-toggle[aria-expanded="true"] span:nth-child(2) {
+    opacity: 0;
+}
+.nav-toggle[aria-expanded="true"] span:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+}
+
+/* =====================
+   Responsive — Mobile
+   ===================== */
+@media (max-width: 640px) {
+
+    .nav-toggle {
+        display: flex;
+    }
+
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        gap: 0;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: rgba(255, 255, 255, 0.97);
+        backdrop-filter: blur(8px);
+        z-index: 15;
+        padding: 8px 0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .nav-links.nav-open {
+        display: flex;
+    }
+
+    .nav-links li {
+        width: 100%;
+    }
+
+    .nav-links li a,
+    .nav-user {
+        display: block;
+        padding: 14px 24px;
+        border-radius: 0;
+        width: 100%;
+        font-size: 1rem;
+    }
+
+    /* Hero text scaling */
+    .hero-heading {
+        font-size: clamp(2rem, 10vw, 3rem);
+    }
+
+    .hero-sub {
+        font-size: clamp(0.9rem, 4vw, 1.2rem);
+    }
+
+    /* Stack hero content vertically on mobile */
+    .hero {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 24px 0;
+    }
+
+    /* Move btn-play to bottom center on mobile */
+    .btn-play {
+        position: static;
+        transform: none;
+        margin: 24px auto 0;
+        align-self: center;
+    }
+
+    /* Login card full width on mobile */
+    .login-card {
+        width: 90%;
+        margin: 24px auto;
+    }
+
+    /* Hub grid single column on mobile */
+    .hub-grid {
+        grid-template-columns: 1fr;
+        padding: 24px;
+    }
 }

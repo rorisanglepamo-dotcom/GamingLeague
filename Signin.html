@@ -13,6 +13,9 @@
         <!-- Navigation Bar -->
         <nav class="navbar">
             <div class="nav-brand">ITSA GAMING LEAGUE</div>
+            <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
             <ul class="nav-links">
                 <li><a href="#">LEADERBOARD</a></li>
                 <li><a href="Login.html">LOGIN</a></li>
@@ -61,6 +64,15 @@
             </a>
 
         </section>
+
+        <script>
+            const toggle = document.querySelector('.nav-toggle');
+            const navLinks = document.querySelector('.nav-links');
+            toggle.addEventListener('click', () => {
+                const open = navLinks.classList.toggle('nav-open');
+                toggle.setAttribute('aria-expanded', open);
+            });
+        </script>
 
     </body>
 </html>
