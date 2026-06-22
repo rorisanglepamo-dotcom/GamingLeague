@@ -23,8 +23,11 @@
         <!-- Navigation Bar -->
         <nav class="navbar">
             <div class="nav-brand">ITSA GAMING LEAGUE</div>
+            <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
             <ul class="nav-links">
-                <li><a href="#">LEADERBOARD</a></li>
+                <li><a href="Leaderboard.html">LEADERBOARD</a></li>
                 <li><a href="#">SIGNIN</a></li>
                 <li><a href="#">LOGIN</a></li>
             </ul>
@@ -46,6 +49,16 @@
         </section>
 
     </body>
+
+    <script>
+        // Hamburger menu toggle
+        const toggle = document.querySelector('.nav-toggle');
+        const navLinks = document.querySelector('.nav-links');
+        toggle.addEventListener('click', () => {
+            const open = navLinks.classList.toggle('nav-open');
+            toggle.setAttribute('aria-expanded', open);
+        });
+    </script>
 
     <script>
         const lines = ["READY TO", "COMPETE,", "PLAY AND", "WIN BIG"];

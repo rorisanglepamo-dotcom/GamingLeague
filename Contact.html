@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>ITSA Gaming League - Contact Admin</title>
+        <meta name="description" content="Contact Gaming Admin - ITSA Gaming League">
+        <meta name="author" content="Rorisang Lepamo">
+        <link rel="stylesheet" href="style/Styling.css">
+    </head>
+    <body>
+
+        <!-- Navigation Bar -->
+        <nav class="navbar">
+            <div class="nav-brand">ITSA GAMING LEAGUE</div>
+            <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links">
+                <li class="nav-user">
+                    <span class="user-greeting">HI, USER</span>
+                    <span class="user-avatar">&#9786;</span>
+                </li>
+                <li><a href="Leaderboard.html">LEADERBOARD</a></li>
+                <li><a href="home.html" class="nav-logout">LOGOUT</a></li>
+            </ul>
+        </nav>
+
+        <!-- Contact Section -->
+        <section class="hero hub-hero">
+
+            <div class="event-panel contact-panel">
+
+                <!-- Panel Header -->
+                <div class="event-panel-header">
+                    <span class="event-panel-title">CONTACT GAMING ADMIN</span>
+                    <a href="Hub.html" class="event-home-btn" aria-label="Back to Hub">&#8962;</a>
+                </div>
+
+                <!-- Contact Form -->
+                <div class="event-panel-body contact-body">
+                    <form class="contact-form" action="#" method="post">
+
+                        <div class="contact-row">
+                            <div class="form-group">
+                                <label for="cName">NAME:</label>
+                                <input type="text" id="cName" name="name" autocomplete="given-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="cStudentNo">STUDENT NO:</label>
+                                <input type="text" id="cStudentNo" name="studentNo" autocomplete="off" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cSubject">SUBJECT:</label>
+                            <input type="text" id="cSubject" name="subject" autocomplete="off" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cMessage">MESSAGE / COMPLAINT:</label>
+                            <textarea id="cMessage" name="message" rows="5" placeholder="Describe your issue or complaint here..." required></textarea>
+                        </div>
+
+                        <div class="contact-actions">
+                            <button type="reset" class="btn-contact btn-reset">CLEAR</button>
+                            <button type="submit" class="btn-contact btn-submit">
+                                SEND
+                                <span class="btn-icon">&#9654;</span>
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+
+            </div>
+
+        </section>
+
+        <script>
+            const toggle = document.querySelector('.nav-toggle');
+            const navLinks = document.querySelector('.nav-links');
+            toggle.addEventListener('click', () => {
+                const open = navLinks.classList.toggle('nav-open');
+                toggle.setAttribute('aria-expanded', open);
+            });
+        </script>
+
+    </body>
+</html>
