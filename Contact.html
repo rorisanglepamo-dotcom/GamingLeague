@@ -22,25 +22,23 @@
                     <span class="user-avatar">&#9786;</span>
                 </li>
                 <li><a href="Leaderboard.html">LEADERBOARD</a></li>
-                <li><a href="home.html" class="nav-logout">LOGOUT</a></li>
+                <li><a href="#" class="nav-logout">LOGOUT</a></li>
             </ul>
         </nav>
 
         <!-- Contact Section -->
         <section class="hero hub-hero">
-
             <div class="event-panel contact-panel">
-
-                <!-- Panel Header -->
                 <div class="event-panel-header">
                     <span class="event-panel-title">CONTACT GAMING ADMIN</span>
                     <a href="Hub.html" class="event-home-btn" aria-label="Back to Hub">&#8962;</a>
                 </div>
 
-                <!-- Contact Form -->
                 <div class="event-panel-body contact-body">
-                    <form class="contact-form" action="#" method="post">
+                    <p id="contact-error"  class="auth-msg auth-error"   style="display:none;"></p>
+                    <p id="contact-success" class="auth-msg auth-success" style="display:none;"></p>
 
+                    <form class="contact-form" id="contactForm" onsubmit="handleContact(event)">
                         <div class="contact-row">
                             <div class="form-group">
                                 <label for="cName">NAME:</label>
@@ -64,27 +62,71 @@
 
                         <div class="contact-actions">
                             <button type="reset" class="btn-contact btn-reset">CLEAR</button>
-                            <button type="submit" class="btn-contact btn-submit">
+                            <button type="submit" id="contactSubmit" class="btn-contact btn-submit">
                                 SEND
                                 <span class="btn-icon">&#9654;</span>
                             </button>
                         </div>
-
                     </form>
                 </div>
-
             </div>
-
         </section>
 
-        <script>
-            const toggle = document.querySelector('.nav-toggle');
-            const navLinks = document.querySelector('.nav-links');
-            toggle.addEventListener('click', () => {
-                const open = navLinks.classList.toggle('nav-open');
-                toggle.setAttribute('aria-expanded', open);
-            });
-        </script>
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        <script src="js/supabase.js"></script>
+        <script src="js/auth-guard.js"></script>
+        <script src="js/logout.js"></script>
+        <script src="js/main.js" defer></script>
 
+        <script>
+            // Pre-fill name and student number from the user's profile
+            document.addEventListener('DOMContentLoaded', () => {
+                const interval = setInterval(() => {
+                    if (window.currentProfile !== undefined) {
+                        clearInterval(interval);
+                        if (window.currentProfile) {
+                            document.getElementById('cName').value =
+                                window.currentProfile.name || '';
+                        }
+                    }
+                }, 50);
+            });
+
+            async function handleContact(e) {
+                e.preventDefault();
+                const errEl     = document.getElementById('contact-error');
+                const successEl = document.getElementById('contact-success');
+                const btn       = document.getElementById('contactSubmit');
+                errEl.style.display = 'none';
+                successEl.style.display = 'none';
+
+                const name      = document.getElementById('cName').value.trim();
+                const studentNo = document.getElementById('cStudentNo').value.trim();
+                const subject   = document.getElementById('cSubject').value.trim();
+                const message   = document.getElementById('cMessage').value.trim();
+
+                btn.disabled = true;
+
+                const { error } = await sb.from('contact_messages').insert({
+                    name,
+                    student_no: studentNo,
+                    subject,
+                    message,
+                    user_id: window.currentUser?.id ?? null
+                });
+
+                btn.disabled = false;
+
+                if (error) {
+                    errEl.textContent = 'Failed to send: ' + error.message;
+                    errEl.style.display = 'block';
+                    return;
+                }
+
+                successEl.textContent = 'Message sent successfully!';
+                successEl.style.display = 'block';
+                document.getElementById('contactForm').reset();
+            }
+        </script>
     </body>
 </html>

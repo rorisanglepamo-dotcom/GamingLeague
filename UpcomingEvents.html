@@ -22,38 +22,79 @@
                     <span class="user-avatar">&#9786;</span>
                 </li>
                 <li><a href="Leaderboard.html">LEADERBOARD</a></li>
-                <li><a href="home.html" class="nav-logout">LOGOUT</a></li>
+                <li><a href="#" class="nav-logout">LOGOUT</a></li>
             </ul>
         </nav>
 
         <!-- Upcoming Events Section -->
         <section class="hero hub-hero">
-
-            <div class="event-panel">
-
-                <!-- Panel Header -->
+            <div class="event-panel" style="width:720px;">
                 <div class="event-panel-header">
-                    <span class="event-panel-title">UPCOMING TOURNAMENT</span>
+                    <span class="event-panel-title">UPCOMING TOURNAMENTS</span>
                     <a href="Hub.html" class="event-home-btn" aria-label="Back to Hub">&#8962;</a>
                 </div>
-
-                <!-- Panel Content Area -->
                 <div class="event-panel-body">
-                    <!-- Tournament listings will go here -->
+                    <table class="admin-table" id="events-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>EVENT</th>
+                                <th>DATE</th>
+                                <th>GAME</th>
+                                <th>VENUE</th>
+                            </tr>
+                        </thead>
+                        <tbody id="events-body">
+                            <tr><td colspan="5" style="text-align:center;color:#999;">Loading...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
-
             </div>
-
         </section>
 
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        <script src="js/supabase.js"></script>
+        <script src="js/auth-guard.js"></script>
+        <script src="js/logout.js"></script>
+        <script src="js/main.js" defer></script>
+
         <script>
-            const toggle = document.querySelector('.nav-toggle');
-            const navLinks = document.querySelector('.nav-links');
-            toggle.addEventListener('click', () => {
-                const open = navLinks.classList.toggle('nav-open');
-                toggle.setAttribute('aria-expanded', open);
+            async function loadEvents() {
+                const today = new Date().toISOString().split('T')[0];
+                const { data, error } = await sb
+                    .from('events')
+                    .select('name, date, game, venue')
+                    .gte('date', today)
+                    .order('date');
+
+                const tbody = document.getElementById('events-body');
+
+                if (error || !data?.length) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#999;">No upcoming tournaments.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = '';
+                data.forEach((ev, i) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${i + 1}</td>
+                        <td>${ev.name}</td>
+                        <td>${ev.date}</td>
+                        <td>${ev.game}</td>
+                        <td>${ev.venue}</td>`;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const interval = setInterval(() => {
+                    if (window.currentUser !== undefined) {
+                        clearInterval(interval);
+                        loadEvents();
+                    }
+                }, 50);
             });
         </script>
-
     </body>
 </html>

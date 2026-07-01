@@ -22,47 +22,81 @@
             </ul>
         </nav>
 
-        <!-- Login Hero Section -->
+        <!-- Login Section -->
         <section class="hero">
-
-            <!-- Login Card -->
             <div class="login-card">
                 <h2 class="login-title">LOGIN</h2>
 
-                <form class="login-form" action="#" method="post">
-                    <div class="form-group">
-                        <label for="name">NAME:</label>
-                        <input type="text" id="name" name="name" autocomplete="name">
-                    </div>
+                <p id="auth-error" class="auth-msg auth-error" style="display:none;"></p>
 
+                <form class="login-form" id="loginForm" onsubmit="handleLogin(event)">
                     <div class="form-group">
-                        <label for="studentNo">STUDENT NO:</label>
-                        <input type="text" id="studentNo" name="studentNo" autocomplete="off">
+                        <label for="email">EMAIL:</label>
+                        <input type="email" id="email" name="email" autocomplete="email" required>
                     </div>
 
                     <div class="form-group">
                         <label for="password">PASSWORD:</label>
-                        <input type="password" id="password" name="password" autocomplete="current-password">
+                        <input type="password" id="password" name="password" autocomplete="current-password" required>
                     </div>
+
+                    <button type="submit" id="submitBtn" class="btn-play" style="position:static;transform:none;margin-top:8px;width:100%;justify-content:center;">
+                        LOGIN
+                        <span class="btn-icon">&#9654;</span>
+                    </button>
                 </form>
+
+                <p style="text-align:center;margin-top:14px;font-size:0.85rem;color:#cce8f4;">
+                    No account? <a href="Signin.html" style="color:#5bc8f5;">Sign in here</a>
+                </p>
             </div>
-
-            <!-- Confirm Button (right side, matching home page style) -->
-            <a href="#" class="btn-play">
-                LOGIN
-                <span class="btn-icon">&#9654;</span>
-            </a>
-
         </section>
 
-        <script>
-            const toggle = document.querySelector('.nav-toggle');
-            const navLinks = document.querySelector('.nav-links');
-            toggle.addEventListener('click', () => {
-                const open = navLinks.classList.toggle('nav-open');
-                toggle.setAttribute('aria-expanded', open);
-            });
-        </script>
+        <!-- Supabase CDN -->
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        <script src="js/supabase.js"></script>
+        <script src="js/main.js" defer></script>
 
+        <script>
+            // Redirect to the correct page based on the user's role
+            async function redirectByRole(userId) {
+                const { data: profile } = await sb
+                    .from('users')
+                    .select('role')
+                    .eq('id', userId)
+                    .single();
+
+                if (profile?.role === 'admin') {
+                    window.location.href = 'Admin/Admin.html';
+                } else {
+                    window.location.href = 'Hub.html';
+                }
+            }
+
+            async function handleLogin(e) {
+                e.preventDefault();
+                const errEl = document.getElementById('auth-error');
+                const btn   = document.getElementById('submitBtn');
+                errEl.style.display = 'none';
+
+                const email    = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+
+                btn.disabled = true;
+                btn.textContent = 'LOGGING IN…';
+
+                const { data, error } = await sb.auth.signInWithPassword({ email, password });
+
+                if (error) {
+                    errEl.textContent = error.message;
+                    errEl.style.display = 'block';
+                    btn.disabled = false;
+                    btn.textContent = 'LOGIN ▶';
+                    return;
+                }
+
+                await redirectByRole(data.user.id);
+            }
+        </script>
     </body>
 </html>

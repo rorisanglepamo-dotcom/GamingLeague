@@ -1,21 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <!-- Character encoding -->
         <meta charset="UTF-8">
-
-        <!-- Responsive viewport -->
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-        <!-- Page title -->
         <title>ITSA Gaming League</title>
-
-        <!-- SEO meta tags -->
         <meta name="description" content="ITSA Gaming League - Compete, Play and Win Big!">
         <meta name="author" content="Rorisang Lepamo">
         <meta name="keywords" content="gaming, league, esports, compete, tournament">
-
-        <!-- Stylesheet -->
         <link rel="stylesheet" href="style/Styling.css">
     </head>
     <body>
@@ -28,8 +19,8 @@
             </button>
             <ul class="nav-links">
                 <li><a href="Leaderboard.html">LEADERBOARD</a></li>
-                <li><a href="#">SIGNIN</a></li>
-                <li><a href="#">LOGIN</a></li>
+                <li><a href="Signin.html">SIGNIN</a></li>
+                <li><a href="Login.html">LOGIN</a></li>
             </ul>
         </nav>
 
@@ -42,65 +33,53 @@
                     REGISTER NOW
                 </p>
             </div>
-            <a href="#" class="btn-play">
+            <a href="Signin.html" class="btn-play">
                 LET'S PLAY
                 <span class="btn-icon">&#9654;</span>
             </a>
         </section>
 
-    </body>
+        <!-- Shared nav script -->
+        <script src="js/main.js" defer></script>
 
-    <script>
-        // Hamburger menu toggle
-        const toggle = document.querySelector('.nav-toggle');
-        const navLinks = document.querySelector('.nav-links');
-        toggle.addEventListener('click', () => {
-            const open = navLinks.classList.toggle('nav-open');
-            toggle.setAttribute('aria-expanded', open);
-        });
-    </script>
+        <!-- Typing animation -->
+        <script>
+            const LINES = ["READY TO", "COMPETE,", "PLAY AND", "WIN BIG"];
+            const heading = document.getElementById("heroHeading");
+            let lineIndex = 0;
+            let charIndex = 0;
 
-    <script>
-        const lines = ["READY TO", "COMPETE,", "PLAY AND", "WIN BIG"];
-        const heading = document.getElementById("heroHeading");
-
-        let lineIndex = 0;
-        let charIndex = 0;
-
-        function typeLine() {
-            if (lineIndex >= lines.length) {
-                // All lines done — remove cursor blink class, leave static cursor
-                heading.classList.remove("typing");
-                return;
-            }
-
-            const currentLine = lines[lineIndex];
-
-            if (charIndex < currentLine.length) {
-                // Still typing current line — add one char
-                const span = heading.querySelectorAll("span.line")[lineIndex];
-                span.textContent += currentLine[charIndex];
-                charIndex++;
-                setTimeout(typeLine, 80);
-            } else {
-                // Line finished — move to next line after a short pause
-                lineIndex++;
-                charIndex = 0;
-
-                if (lineIndex < lines.length) {
-                    const newSpan = document.createElement("span");
-                    newSpan.classList.add("line");
-                    heading.appendChild(newSpan);
+            function typeLine() {
+                if (lineIndex >= LINES.length) {
+                    heading.classList.remove("typing");
+                    return;
                 }
-                setTimeout(typeLine, 180);
-            }
-        }
 
-        // Kick off — create first line span and start typing
-        heading.classList.add("typing");
-        const firstSpan = document.createElement("span");
-        firstSpan.classList.add("line");
-        heading.appendChild(firstSpan);
-        setTimeout(typeLine, 400);
-    </script>
+                const currentLine = LINES[lineIndex];
+
+                if (charIndex < currentLine.length) {
+                    heading.querySelectorAll("span.line")[lineIndex].textContent += currentLine[charIndex];
+                    charIndex++;
+                    setTimeout(typeLine, 80);
+                } else {
+                    lineIndex++;
+                    charIndex = 0;
+                    if (lineIndex < LINES.length) {
+                        const newSpan = document.createElement("span");
+                        newSpan.classList.add("line");
+                        heading.appendChild(newSpan);
+                    }
+                    setTimeout(typeLine, 180);
+                }
+            }
+
+            // Kick off typing
+            heading.classList.add("typing");
+            const firstSpan = document.createElement("span");
+            firstSpan.classList.add("line");
+            heading.appendChild(firstSpan);
+            setTimeout(typeLine, 400);
+        </script>
+
+    </body>
 </html>

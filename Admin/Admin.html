@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>ITSA Gaming League - Admin</title>
+        <meta name="description" content="Admin Dashboard - ITSA Gaming League">
+        <meta name="author" content="Rorisang Lepamo">
+        <link rel="stylesheet" href="../style/Styling.css">
+        <style>
+            .admin-badge {
+                display: inline-block;
+                background-color: #dc3232;
+                color: #fff;
+                font-size: 0.65rem;
+                font-weight: 900;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
+                padding: 2px 8px;
+                border-radius: 4px;
+                margin-left: 8px;
+                vertical-align: middle;
+            }
+            .admin-grid { grid-template-columns: repeat(3, 1fr); max-width: 960px; }
+            @media (max-width: 860px) { .admin-grid { grid-template-columns: 1fr 1fr; } }
+            @media (max-width: 540px) { .admin-grid { grid-template-columns: 1fr; } }
+            .admin-section {
+                position: relative;
+                z-index: 2;
+                background-color: rgba(30, 65, 80, 0.88);
+                border-radius: 16px;
+                width: 860px;
+                max-width: 95vw;
+                backdrop-filter: blur(6px);
+                overflow: hidden;
+                margin-top: 32px;
+            }
+        </style>
+    </head>
+    <body>
+
+        <!-- Navigation Bar -->
+        <nav class="navbar">
+            <div class="nav-brand">ITSA GAMING LEAGUE</div>
+            <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links">
+                <li class="nav-user">
+                    <span class="user-greeting">HI, ADMIN</span>
+                    <span class="user-avatar">&#9881;</span>
+                </li>
+                <li><a href="../Leaderboard.html">LEADERBOARD</a></li>
+                <li><a href="#" class="nav-logout">LOGOUT</a></li>
+            </ul>
+        </nav>
+
+        <!-- Admin Dashboard -->
+        <section class="hero hub-hero" style="flex-direction:column;padding:40px 20px;">
+
+            <!-- Quick Action Cards -->
+            <div class="hub-grid admin-grid">
+                <a href="#manage-leagues" class="hub-card hub-green" onclick="showSection('manage-leagues')">MANAGE<br>LEAGUES</a>
+                <a href="#manage-users" class="hub-card hub-blue" onclick="showSection('manage-users')">MANAGE<br>USERS</a>
+                <a href="#manage-events" class="hub-card hub-yellow" onclick="showSection('manage-events')">MANAGE<br>EVENTS</a>
+                <a href="#manage-fixtures" class="hub-card hub-red" onclick="showSection('manage-fixtures')">MANAGE<br>FIXTURES</a>
+                <a href="#manage-leaderboard" class="hub-card hub-blue" onclick="showSection('manage-leaderboard')">UPDATE<br>LEADERBOARD</a>
+                <a href="#view-contacts" class="hub-card hub-green" onclick="showSection('view-contacts')">VIEW<br>CONTACT MESSAGES</a>
+            </div>
+
+            <!-- MANAGE LEAGUES -->
+            <div id="manage-leagues" class="admin-section" style="display:none;">
+                <div class="event-panel-header">
+                    <span class="event-panel-title">MANAGE LEAGUES</span>
+                    <button class="event-home-btn" onclick="closeSection('manage-leagues')" aria-label="Close">&#10005;</button>
+                </div>
+                <div class="event-panel-body">
+                    <div class="contact-actions" style="margin-bottom:14px;justify-content:center;">
+                        <button class="btn-contact btn-submit" onclick="openLeagueModal()">+ ADD LEAGUE</button>
+                    </div>
+                    <table class="admin-table" id="leagues-table">
+                        <thead><tr><th>#</th><th>LEAGUE NAME</th><th>GAME</th><th>STATUS</th><th>PLAYERS</th><th>ACTIONS</th></tr></thead>
+                        <tbody id="leagues-body"><tr><td colspan="6" style="text-align:center;color:#999;">Loading...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- MANAGE USERS -->
+            <div id="manage-users" class="admin-section" style="display:none;">
+                <div class="event-panel-header">
+                    <span class="event-panel-title">MANAGE USERS</span>
+                    <button class="event-home-btn" onclick="closeSection('manage-users')" aria-label="Close">&#10005;</button>
+                </div>
+                <div class="event-panel-body">
+                    <table class="admin-table" id="users-table">
+                        <thead><tr><th>#</th><th>NAME</th><th>STUDENT NO</th><th>EMAIL</th><th>ROLE</th><th>JOINED</th><th>ACTIONS</th></tr></thead>
+                        <tbody id="users-body"><tr><td colspan="7" style="text-align:center;color:#999;">Loading...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- MANAGE EVENTS -->
+            <div id="manage-events" class="admin-section" style="display:none;">
+                <div class="event-panel-header">
+                    <span class="event-panel-title">MANAGE EVENTS</span>
+                    <button class="event-home-btn" onclick="closeSection('manage-events')" aria-label="Close">&#10005;</button>
+                </div>
+                <div class="event-panel-body">
+                    <div class="contact-actions" style="margin-bottom:14px;">
+                        <button class="btn-contact btn-submit" onclick="openModal('add-event-modal')">+ ADD EVENT</button>
+                    </div>
+                    <table class="admin-table" id="events-table">
+                        <thead><tr><th>#</th><th>EVENT NAME</th><th>DATE</th><th>GAME</th><th>VENUE</th><th>ACTIONS</th></tr></thead>
+                        <tbody id="events-body"><tr><td colspan="6" style="text-align:center;color:#999;">Loading...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- MANAGE FIXTURES -->
+            <div id="manage-fixtures" class="admin-section" style="display:none;">
+                <div class="event-panel-header">
+                    <span class="event-panel-title">MANAGE FIXTURES</span>
+                    <button class="event-home-btn" onclick="closeSection('manage-fixtures')" aria-label="Close">&#10005;</button>
+                </div>
+                <div class="event-panel-body">
+                    <div class="contact-actions" style="margin-bottom:14px;">
+                        <button class="btn-contact btn-submit" onclick="openModal('add-fixture-modal')">+ ADD FIXTURE</button>
+                    </div>
+                    <table class="admin-table" id="fixtures-table">
+                        <thead><tr><th>#</th><th>PLAYER 1</th><th>PLAYER 2</th><th>LEAGUE</th><th>DATE</th><th>RESULT</th><th>ACTIONS</th></tr></thead>
+                        <tbody id="fixtures-body"><tr><td colspan="7" style="text-align:center;color:#999;">Loading...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- UPDATE LEADERBOARD -->
+            <div id="manage-leaderboard" class="admin-section" style="display:none;">
+                <div class="event-panel-header">
+                    <span class="event-panel-title">UPDATE LEADERBOARD</span>
+                    <button class="event-home-btn" onclick="closeSection('manage-leaderboard')" aria-label="Close">&#10005;</button>
+                </div>
+                <div class="event-panel-body">
+                    <table class="admin-table" id="leaderboard-table">
+                        <thead><tr><th>RANK</th><th>PLAYER</th><th>WINS</th><th>LOSSES</th><th>POINTS</th><th>ACTIONS</th></tr></thead>
+                        <tbody id="leaderboard-body"><tr><td colspan="6" style="text-align:center;color:#999;">Loading...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VIEW CONTACT MESSAGES -->
+            <div id="view-contacts" class="admin-section" style="display:none;margin-bottom:40px;">
+                <div class="event-panel-header">
+                    <span class="event-panel-title">CONTACT MESSAGES</span>
+                    <button class="event-home-btn" onclick="closeSection('view-contacts')" aria-label="Close">&#10005;</button>
+                </div>
+                <div class="event-panel-body">
+                    <table class="admin-table" id="contacts-table">
+                        <thead><tr><th>#</th><th>NAME</th><th>STUDENT NO</th><th>SUBJECT</th><th>MESSAGE</th><th>ACTIONS</th></tr></thead>
+                        <tbody id="contacts-body"><tr><td colspan="6" style="text-align:center;color:#999;">Loading...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- ADD / EDIT LEAGUE MODAL -->
+        <div id="add-league-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-league-title" style="display:none;">
+            <div class="modal-card">
+                <div class="modal-header">
+                    <span id="modal-league-title" class="event-panel-title">ADD LEAGUE</span>
+                    <button class="event-home-btn" onclick="closeLeagueModal()" aria-label="Close">&#10005;</button>
+                </div>
+                <form class="login-form" onsubmit="return false;">
+                    <!-- Hidden field stores the ID when editing -->
+                    <input type="hidden" id="league-edit-id">
+                    <div class="form-group"><label for="league-name">League Name</label><input type="text" id="league-name" required></div>
+                    <div class="form-group"><label for="league-game">Game</label><input type="text" id="league-game" required></div>
+                    <div class="form-group">
+                        <label for="league-status">Status</label>
+                        <select id="league-status" class="admin-select"><option value="open">Open</option><option value="closed">Closed</option></select>
+                    </div>
+                    <div class="contact-actions">
+                        <button type="button" class="btn-contact btn-reset" onclick="closeLeagueModal()">CANCEL</button>
+                        <button type="button" id="league-save-btn" class="btn-contact btn-submit" onclick="saveLeague()">SAVE</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ADD EVENT MODAL -->
+        <div id="add-event-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-event-title" style="display:none;">
+            <div class="modal-card">
+                <div class="modal-header">
+                    <span id="modal-event-title" class="event-panel-title">ADD EVENT</span>
+                    <button class="event-home-btn" onclick="closeModal('add-event-modal')" aria-label="Close">&#10005;</button>
+                </div>
+                <form class="login-form" onsubmit="return false;">
+                    <div class="form-group"><label for="event-name">Event Name</label><input type="text" id="event-name" required></div>
+                    <div class="form-group"><label for="event-date">Date</label><input type="date" id="event-date" required></div>
+                    <div class="form-group"><label for="event-game">Game</label><input type="text" id="event-game" required></div>
+                    <div class="form-group"><label for="event-venue">Venue</label><input type="text" id="event-venue" required></div>
+                    <div class="contact-actions">
+                        <button type="button" class="btn-contact btn-reset" onclick="closeModal('add-event-modal')">CANCEL</button>
+                        <button type="button" class="btn-contact btn-submit" onclick="addEvent()">SAVE</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ADD FIXTURE MODAL -->
+        <div id="add-fixture-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-fixture-title" style="display:none;">
+            <div class="modal-card">
+                <div class="modal-header">
+                    <span id="modal-fixture-title" class="event-panel-title">ADD FIXTURE</span>
+                    <button class="event-home-btn" onclick="closeModal('add-fixture-modal')" aria-label="Close">&#10005;</button>
+                </div>
+                <form class="login-form" onsubmit="return false;">
+                    <div class="form-group"><label for="fix-p1">Player 1 (Student No)</label><input type="text" id="fix-p1" required></div>
+                    <div class="form-group"><label for="fix-p2">Player 2 (Student No)</label><input type="text" id="fix-p2" required></div>
+                    <div class="form-group"><label for="fix-league-id">League ID</label><input type="number" id="fix-league-id" required></div>
+                    <div class="form-group"><label for="fix-date">Date</label><input type="date" id="fix-date" required></div>
+                    <div class="form-group"><label for="fix-result">Result (optional)</label><input type="text" id="fix-result" placeholder="e.g. 3 - 1"></div>
+                    <div class="contact-actions">
+                        <button type="button" class="btn-contact btn-reset" onclick="closeModal('add-fixture-modal')">CANCEL</button>
+                        <button type="button" class="btn-contact btn-submit" onclick="addFixture()">SAVE</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+        <!-- Supabase + auth (admin-only guard) -->
+        <script>const REQUIRE_ADMIN = true;</script>
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        <script src="../js/supabase.js"></script>
+        <script src="../js/auth-guard.js"></script>
+        <script src="../js/logout.js"></script>
+        <script src="../js/main.js" defer></script>
+
+        <script>
+            // ── UI helpers ─────────────────────────────────────────────────────
+            function showSection(id) {
+                document.querySelectorAll('.admin-section').forEach(el => el.style.display = 'none');
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.style.display = 'block';
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                // Lazy-load data on first open
+                if (!el.dataset.loaded) { el.dataset.loaded = '1'; loadSection(id); }
+            }
+            function closeSection(id) { const el = document.getElementById(id); if (el) el.style.display = 'none'; }
+            function openModal(id)    { const m  = document.getElementById(id); if (m)  m.style.display  = 'flex'; }
+            function closeModal(id)   { const m  = document.getElementById(id); if (m)  m.style.display  = 'none'; }
+
+            document.querySelectorAll('.modal-overlay').forEach(o => {
+                o.addEventListener('click', e => { if (e.target === o) o.style.display = 'none'; });
+            });
+
+            // ── Section data loader ────────────────────────────────────────────
+            async function loadSection(id) {
+                switch (id) {
+                    case 'manage-leagues':    await loadLeagues();     break;
+                    case 'manage-users':      await loadUsers();       break;
+                    case 'manage-events':     await loadEvents();      break;
+                    case 'manage-fixtures':   await loadFixtures();    break;
+                    case 'manage-leaderboard':await loadLeaderboard(); break;
+                    case 'view-contacts':     await loadContacts();    break;
+                }
+            }
+
+            // ── Leagues ───────────────────────────────────────────────────────
+            async function loadLeagues() {
+                const { data } = await sb.from('leagues').select('*').order('id');
+                const tbody = document.getElementById('leagues-body');
+                tbody.innerHTML = '';
+                if (!data?.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999;">No leagues yet.</td></tr>'; return; }
+                data.forEach((l, i) => {
+                    const badge = l.status === 'open' ? 'status-open' : 'status-closed';
+                    const tr = tbody.insertRow();
+                    tr.dataset.id = l.id;
+                    tr.innerHTML = `<td>${i+1}</td><td>${l.name}</td><td>${l.game}</td>
+                        <td><span class="status-badge ${badge}">${l.status.toUpperCase()}</span></td>
+                        <td>${l.player_count}</td>
+                        <td class="action-btns">
+                            <button class="btn-action btn-edit" title="Edit" onclick="openLeagueModal(${l.id}, '${l.name.replace(/'/g,"\\'")}', '${l.game.replace(/'/g,"\\'")}', '${l.status}')">&#9998;</button>
+                            <button class="btn-action btn-delete" title="Delete" onclick="deleteLeague(${l.id}, this)">&#128465;</button>
+                        </td>`;
+                });
+            }
+
+            // Opens the league modal in add mode (no args) or edit mode (with args)
+            function openLeagueModal(id, name, game, status) {
+                const isEdit = id !== undefined;
+                document.getElementById('modal-league-title').textContent = isEdit ? 'EDIT LEAGUE' : 'ADD LEAGUE';
+                document.getElementById('league-edit-id').value = isEdit ? id : '';
+                document.getElementById('league-name').value   = isEdit ? name   : '';
+                document.getElementById('league-game').value   = isEdit ? game   : '';
+                document.getElementById('league-status').value = isEdit ? status : 'open';
+                openModal('add-league-modal');
+            }
+
+            function closeLeagueModal() {
+                closeModal('add-league-modal');
+            }
+
+            async function saveLeague() {
+                const name   = document.getElementById('league-name').value.trim();
+                const game   = document.getElementById('league-game').value.trim();
+                const status = document.getElementById('league-status').value;
+                const editId = document.getElementById('league-edit-id').value;
+                if (!name || !game) { alert('Please fill all fields.'); return; }
+
+                if (editId) {
+                    // Update existing league
+                    const { error } = await sb.from('leagues').update({ name, game, status }).eq('id', editId);
+                    if (error) { alert('Error: ' + error.message); return; }
+                } else {
+                    // Insert new league
+                    const { error } = await sb.from('leagues').insert({ name, game, status });
+                    if (error) { alert('Error: ' + error.message); return; }
+                }
+
+                closeLeagueModal();
+                document.getElementById('manage-leagues').dataset.loaded = '';
+                loadLeagues();
+            }
+
+            async function deleteLeague(id, btn) {
+                if (!confirm('Delete this league?')) return;
+                const { error } = await sb.from('leagues').delete().eq('id', id);
+                if (error) { alert('Error: ' + error.message); return; }
+                btn.closest('tr').remove();
+            }
+
+            // ── Users ─────────────────────────────────────────────────────────
+            async function loadUsers() {
+                const { data } = await sb.from('users').select('id, name, surname, student_no, email, role, created_at').order('created_at');
+                const tbody = document.getElementById('users-body');
+                tbody.innerHTML = '';
+                if (!data?.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#999;">No users yet.</td></tr>'; return; }
+                data.forEach((u, i) => {
+                    const joined = u.created_at ? u.created_at.split('T')[0] : '—';
+                    const tr = tbody.insertRow();
+                    tr.dataset.id = u.id;
+                    tr.innerHTML = `<td>${i+1}</td><td>${u.name} ${u.surname}</td><td>${u.student_no}</td>
+                        <td>${u.email}</td><td>${u.role}</td><td>${joined}</td>
+                        <td class="action-btns">
+                            <button class="btn-action btn-delete" title="Remove" onclick="deleteUser('${u.id}', this)">&#128465;</button>
+                        </td>`;
+                });
+            }
+
+            async function deleteUser(id, btn) {
+                if (!confirm('Remove this user? This cannot be undone.')) return;
+                const { error } = await sb.from('users').delete().eq('id', id);
+                if (error) { alert('Error: ' + error.message); return; }
+                btn.closest('tr').remove();
+            }
+
+            // ── Events ────────────────────────────────────────────────────────
+            async function loadEvents() {
+                const { data } = await sb.from('events').select('*').order('date');
+                const tbody = document.getElementById('events-body');
+                tbody.innerHTML = '';
+                if (!data?.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999;">No events yet.</td></tr>'; return; }
+                data.forEach((ev, i) => {
+                    const tr = tbody.insertRow();
+                    tr.dataset.id = ev.id;
+                    tr.innerHTML = `<td>${i+1}</td><td>${ev.name}</td><td>${ev.date}</td>
+                        <td>${ev.game}</td><td>${ev.venue}</td>
+                        <td class="action-btns">
+                            <button class="btn-action btn-delete" title="Delete" onclick="deleteEvent(${ev.id}, this)">&#128465;</button>
+                        </td>`;
+                });
+            }
+
+            async function addEvent() {
+                const name  = document.getElementById('event-name').value.trim();
+                const date  = document.getElementById('event-date').value;
+                const game  = document.getElementById('event-game').value.trim();
+                const venue = document.getElementById('event-venue').value.trim();
+                if (!name || !date || !game || !venue) { alert('Please fill all fields.'); return; }
+                const { error } = await sb.from('events').insert({ name, date, game, venue });
+                if (error) { alert('Error: ' + error.message); return; }
+                closeModal('add-event-modal');
+                document.getElementById('manage-events').dataset.loaded = '';
+                loadEvents();
+            }
+
+            async function deleteEvent(id, btn) {
+                if (!confirm('Delete this event?')) return;
+                const { error } = await sb.from('events').delete().eq('id', id);
+                if (error) { alert('Error: ' + error.message); return; }
+                btn.closest('tr').remove();
+            }
+
+            // ── Fixtures ──────────────────────────────────────────────────────
+            async function loadFixtures() {
+                const { data } = await sb
+                    .from('fixtures')
+                    .select('id, date, result, leagues(name), p1:player1_id(name,surname), p2:player2_id(name,surname)')
+                    .order('date', { ascending: false });
+                const tbody = document.getElementById('fixtures-body');
+                tbody.innerHTML = '';
+                if (!data?.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#999;">No fixtures yet.</td></tr>'; return; }
+                data.forEach((f, i) => {
+                    const p1 = f.p1 ? `${f.p1.name} ${f.p1.surname}` : '—';
+                    const p2 = f.p2 ? `${f.p2.name} ${f.p2.surname}` : '—';
+                    const tr = tbody.insertRow();
+                    tr.dataset.id = f.id;
+                    tr.innerHTML = `<td>${i+1}</td><td>${p1}</td><td>${p2}</td>
+                        <td>${f.leagues?.name ?? '—'}</td><td>${f.date}</td><td>${f.result ?? 'TBD'}</td>
+                        <td class="action-btns">
+                            <button class="btn-action btn-delete" title="Delete" onclick="deleteFixture(${f.id}, this)">&#128465;</button>
+                        </td>`;
+                });
+            }
+
+            async function addFixture() {
+                const p1Sno  = document.getElementById('fix-p1').value.trim();
+                const p2Sno  = document.getElementById('fix-p2').value.trim();
+                const leagId = document.getElementById('fix-league-id').value.trim();
+                const date   = document.getElementById('fix-date').value;
+                const result = document.getElementById('fix-result').value.trim() || 'TBD';
+                if (!p1Sno || !p2Sno || !leagId || !date) { alert('Please fill all required fields.'); return; }
+
+                // Resolve student numbers to user IDs
+                const { data: p1Data } = await sb.from('users').select('id').eq('student_no', p1Sno).single();
+                const { data: p2Data } = await sb.from('users').select('id').eq('student_no', p2Sno).single();
+                if (!p1Data) { alert('Player 1 student number not found.'); return; }
+                if (!p2Data) { alert('Player 2 student number not found.'); return; }
+
+                const { error } = await sb.from('fixtures').insert({
+                    player1_id: p1Data.id, player2_id: p2Data.id,
+                    league_id: parseInt(leagId), date, result
+                });
+                if (error) { alert('Error: ' + error.message); return; }
+                closeModal('add-fixture-modal');
+                document.getElementById('manage-fixtures').dataset.loaded = '';
+                loadFixtures();
+            }
+
+            async function deleteFixture(id, btn) {
+                if (!confirm('Delete this fixture?')) return;
+                const { error } = await sb.from('fixtures').delete().eq('id', id);
+                if (error) { alert('Error: ' + error.message); return; }
+                btn.closest('tr').remove();
+            }
+
+            // ── Leaderboard ───────────────────────────────────────────────────
+            async function loadLeaderboard() {
+                const { data } = await sb
+                    .from('leaderboard')
+                    .select('id, wins, losses, points, users(name, surname)')
+                    .order('points', { ascending: false });
+                const tbody = document.getElementById('leaderboard-body');
+                tbody.innerHTML = '';
+                if (!data?.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999;">No entries yet.</td></tr>'; return; }
+                data.forEach((row, i) => {
+                    const name = row.users ? `${row.users.name} ${row.users.surname}` : '—';
+                    const tr = tbody.insertRow();
+                    tr.dataset.id = row.id;
+                    tr.innerHTML = `<td>${i+1}</td><td>${name}</td>
+                        <td><input type="number" value="${row.wins}"   min="0" style="width:60px;" onchange="updateScore(${row.id},'wins',this.value)"></td>
+                        <td><input type="number" value="${row.losses}" min="0" style="width:60px;" onchange="updateScore(${row.id},'losses',this.value)"></td>
+                        <td><input type="number" value="${row.points}" min="0" style="width:60px;" onchange="updateScore(${row.id},'points',this.value)"></td>
+                        <td class="action-btns">
+                            <button class="btn-action btn-delete" title="Remove" onclick="deleteLeaderboardEntry(${row.id}, this)">&#128465;</button>
+                        </td>`;
+                });
+            }
+
+            async function updateScore(id, field, value) {
+                const { error } = await sb.from('leaderboard').update({ [field]: parseInt(value) }).eq('id', id);
+                if (error) alert('Save failed: ' + error.message);
+            }
+
+            async function deleteLeaderboardEntry(id, btn) {
+                if (!confirm('Remove this entry?')) return;
+                const { error } = await sb.from('leaderboard').delete().eq('id', id);
+                if (error) { alert('Error: ' + error.message); return; }
+                btn.closest('tr').remove();
+            }
+
+            // ── Contact messages ──────────────────────────────────────────────
+            async function loadContacts() {
+                const { data } = await sb.from('contact_messages').select('*').order('created_at', { ascending: false });
+                const tbody = document.getElementById('contacts-body');
+                tbody.innerHTML = '';
+                if (!data?.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999;">No messages.</td></tr>'; return; }
+                data.forEach((msg, i) => {
+                    const tr = tbody.insertRow();
+                    tr.dataset.id = msg.id;
+                    tr.innerHTML = `<td>${i+1}</td><td>${msg.name}</td><td>${msg.student_no}</td>
+                        <td>${msg.subject}</td><td>${msg.message}</td>
+                        <td class="action-btns">
+                            <button class="btn-action btn-delete" title="Dismiss" onclick="dismissMessage(${msg.id}, this)">&#10005;</button>
+                        </td>`;
+                });
+            }
+
+            async function dismissMessage(id, btn) {
+                if (!confirm('Dismiss this message?')) return;
+                const { error } = await sb.from('contact_messages').delete().eq('id', id);
+                if (error) { alert('Error: ' + error.message); return; }
+                btn.closest('tr').remove();
+            }
+        </script>
+    </body>
+</html>

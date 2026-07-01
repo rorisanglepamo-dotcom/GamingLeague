@@ -22,38 +22,91 @@
                     <span class="user-avatar">&#9786;</span>
                 </li>
                 <li><a href="Leaderboard.html">LEADERBOARD</a></li>
-                <li><a href="home.html" class="nav-logout">LOGOUT</a></li>
+                <li><a href="#" class="nav-logout">LOGOUT</a></li>
             </ul>
         </nav>
 
         <!-- User Fixtures Section -->
         <section class="hero hub-hero">
-
-            <div class="event-panel">
-
-                <!-- Panel Header -->
+            <div class="event-panel" style="width:760px;">
                 <div class="event-panel-header">
                     <span class="event-panel-title">MY FIXTURES</span>
                     <a href="Hub.html" class="event-home-btn" aria-label="Back to Hub">&#8962;</a>
                 </div>
-
-                <!-- Panel Content Area -->
                 <div class="event-panel-body">
-                    <!-- User fixture listings will go here -->
+                    <table class="admin-table" id="fixtures-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>OPPONENT</th>
+                                <th>LEAGUE</th>
+                                <th>DATE</th>
+                                <th>RESULT</th>
+                            </tr>
+                        </thead>
+                        <tbody id="fixtures-body">
+                            <tr><td colspan="5" style="text-align:center;color:#999;">Loading...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
-
             </div>
-
         </section>
 
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        <script src="js/supabase.js"></script>
+        <script src="js/auth-guard.js"></script>
+        <script src="js/logout.js"></script>
+        <script src="js/main.js" defer></script>
+
         <script>
-            const toggle = document.querySelector('.nav-toggle');
-            const navLinks = document.querySelector('.nav-links');
-            toggle.addEventListener('click', () => {
-                const open = navLinks.classList.toggle('nav-open');
-                toggle.setAttribute('aria-expanded', open);
+            async function loadMyFixtures() {
+                const uid = window.currentUser.id;
+
+                const { data, error } = await sb
+                    .from('fixtures')
+                    .select(`
+                        date, result,
+                        leagues(name),
+                        p1:player1_id(name, surname),
+                        p2:player2_id(name, surname)
+                    `)
+                    .or(`player1_id.eq.${uid},player2_id.eq.${uid}`)
+                    .order('date', { ascending: false });
+
+                const tbody = document.getElementById('fixtures-body');
+
+                if (error || !data?.length) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#999;">No fixtures found.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = '';
+                data.forEach((fix, i) => {
+                    // Opponent is whichever player is not the current user
+                    const opponentObj = fix.p1?.id === uid ? fix.p2 : fix.p1;
+                    const opponent = opponentObj
+                        ? `${opponentObj.name} ${opponentObj.surname}`
+                        : 'TBD';
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${i + 1}</td>
+                        <td>${opponent}</td>
+                        <td>${fix.leagues?.name ?? '—'}</td>
+                        <td>${fix.date}</td>
+                        <td>${fix.result ?? 'TBD'}</td>`;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const interval = setInterval(() => {
+                    if (window.currentUser !== undefined) {
+                        clearInterval(interval);
+                        loadMyFixtures();
+                    }
+                }, 50);
             });
         </script>
-
     </body>
 </html>

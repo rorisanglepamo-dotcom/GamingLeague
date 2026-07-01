@@ -22,57 +22,139 @@
             </ul>
         </nav>
 
-        <!-- Signin Hero Section -->
+        <!-- Sign In Section -->
         <section class="hero">
-
-            <!-- Signin Card -->
             <div class="login-card">
-                <h2 class="login-title">SIGNIN</h2>
+                <h2 class="login-title">SIGN IN</h2>
 
-                <form class="login-form" action="#" method="post">
+                <p id="auth-error" class="auth-msg auth-error" style="display:none;"></p>
+                <p id="auth-success" class="auth-msg auth-success" style="display:none;"></p>
+
+                <form class="login-form" id="signinForm" onsubmit="handleSignin(event)">
                     <div class="form-group">
                         <label for="name">NAME:</label>
-                        <input type="text" id="name" name="name" autocomplete="given-name">
+                        <input type="text" id="name" name="name" autocomplete="given-name" required>
                     </div>
 
                     <div class="form-group">
                         <label for="surname">SURNAME:</label>
-                        <input type="text" id="surname" name="surname" autocomplete="family-name">
+                        <input type="text" id="surname" name="surname" autocomplete="family-name" required>
                     </div>
 
                     <div class="form-group">
                         <label for="studentNo">STUDENT NO:</label>
-                        <input type="text" id="studentNo" name="studentNo" autocomplete="off">
+                        <input type="text" id="studentNo" name="studentNo" autocomplete="off" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">EMAIL:</label>
+                        <input type="email" id="email" name="email" autocomplete="email" required>
                     </div>
 
                     <div class="form-group">
                         <label for="password">PASSWORD:</label>
-                        <input type="password" id="password" name="password" autocomplete="new-password">
+                        <input type="password" id="password" name="password" autocomplete="new-password" minlength="6" required>
                     </div>
 
                     <div class="form-group">
                         <label for="confirmPassword">CONFIRM PASSWORD:</label>
-                        <input type="password" id="confirmPassword" name="confirmPassword" autocomplete="new-password">
+                        <input type="password" id="confirmPassword" name="confirmPassword" autocomplete="new-password" minlength="6" required>
                     </div>
+
+                    <button type="submit" id="submitBtn" class="btn-play" style="position:static;transform:none;margin-top:8px;width:100%;justify-content:center;">
+                        CONFIRM
+                        <span class="btn-icon">&#9654;</span>
+                    </button>
                 </form>
             </div>
-
-            <!-- Confirm Button -->
-            <a href="#" class="btn-play">
-                CONFIRM
-                <span class="btn-icon">&#9654;</span>
-            </a>
-
         </section>
 
-        <script>
-            const toggle = document.querySelector('.nav-toggle');
-            const navLinks = document.querySelector('.nav-links');
-            toggle.addEventListener('click', () => {
-                const open = navLinks.classList.toggle('nav-open');
-                toggle.setAttribute('aria-expanded', open);
-            });
-        </script>
+        <!-- Supabase CDN -->
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        <script src="js/supabase.js"></script>
+        <script src="js/main.js" defer></script>
 
+        <script>
+            // Redirect based on the user's role
+            async function redirectByRole(userId) {
+                const { data: profile } = await sb
+                    .from('users')
+                    .select('role')
+                    .eq('id', userId)
+                    .single();
+
+                if (profile?.role === 'admin') {
+                    window.location.href = 'Admin/Admin.html';
+                } else {
+                    window.location.href = 'Hub.html';
+                }
+            }
+
+            async function handleSignin(e) {
+                e.preventDefault();
+                const errEl     = document.getElementById('auth-error');
+                const successEl = document.getElementById('auth-success');
+                const btn       = document.getElementById('submitBtn');
+                errEl.style.display = 'none';
+                successEl.style.display = 'none';
+
+                const name      = document.getElementById('name').value.trim();
+                const surname   = document.getElementById('surname').value.trim();
+                const studentNo = document.getElementById('studentNo').value.trim();
+                const email     = document.getElementById('email').value.trim();
+                const password  = document.getElementById('password').value;
+                const confirm   = document.getElementById('confirmPassword').value;
+
+                if (password !== confirm) {
+                    errEl.textContent = 'Passwords do not match.';
+                    errEl.style.display = 'block';
+                    return;
+                }
+
+                btn.disabled = true;
+                btn.textContent = 'CREATING ACCOUNT…';
+
+                // 1. Create Supabase Auth user (metadata passed for the trigger)
+                const { data, error } = await sb.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                        data: { name, surname, student_no: studentNo }
+                    }
+                });
+
+                if (error) {
+                    errEl.textContent = error.message;
+                    errEl.style.display = 'block';
+                    btn.disabled = false;
+                    btn.textContent = 'CONFIRM ▶';
+                    return;
+                }
+
+                // 2. Insert profile row (trigger also does this as a safety net)
+                if (data.user) {
+                    await sb.from('users').upsert({
+                        id:         data.user.id,
+                        name,
+                        surname,
+                        student_no: studentNo,
+                        email,
+                        role:       'user'
+                    }, { onConflict: 'id' });
+                }
+
+                // 3. If a live session exists (email confirmation disabled in Supabase),
+                //    redirect immediately. Otherwise prompt the user to confirm their email.
+                if (data.session) {
+                    await redirectByRole(data.user.id);
+                } else {
+                    successEl.textContent = 'Account created! Check your email to confirm, then log in.';
+                    successEl.style.display = 'block';
+                    document.getElementById('signinForm').reset();
+                    btn.disabled = false;
+                    btn.textContent = 'CONFIRM ▶';
+                }
+            }
+        </script>
     </body>
 </html>

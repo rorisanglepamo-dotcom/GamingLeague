@@ -22,37 +22,80 @@
                     <span class="user-avatar">&#9786;</span>
                 </li>
                 <li><a href="Hub.html">HUB</a></li>
-                <li><a href="home.html" class="nav-logout">LOGOUT</a></li>
+                <li><a href="#" class="nav-logout">LOGOUT</a></li>
             </ul>
         </nav>
 
         <!-- Leaderboard Section -->
         <section class="hero hub-hero">
-
-            <div class="event-panel">
-
-                <!-- Panel Header (no home icon — nav has HUB link instead) -->
+            <div class="event-panel" style="width:700px;">
                 <div class="event-panel-header">
                     <span class="event-panel-title">LEADERBOARD</span>
                 </div>
-
-                <!-- Panel Content Area -->
                 <div class="event-panel-body">
-                    <!-- Leaderboard rankings will go here -->
+                    <table class="admin-table" id="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>RANK</th>
+                                <th>PLAYER</th>
+                                <th>WINS</th>
+                                <th>LOSSES</th>
+                                <th>POINTS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-body">
+                            <tr><td colspan="5" style="text-align:center;color:#999;">Loading...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
-
             </div>
-
         </section>
 
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        <script src="js/supabase.js"></script>
+        <script src="js/auth-guard.js"></script>
+        <script src="js/logout.js"></script>
+        <script src="js/main.js" defer></script>
+
         <script>
-            const toggle = document.querySelector('.nav-toggle');
-            const navLinks = document.querySelector('.nav-links');
-            toggle.addEventListener('click', () => {
-                const open = navLinks.classList.toggle('nav-open');
-                toggle.setAttribute('aria-expanded', open);
+            async function loadLeaderboard() {
+                const { data, error } = await sb
+                    .from('leaderboard')
+                    .select('points, wins, losses, users(name, surname)')
+                    .order('points', { ascending: false });
+
+                const tbody = document.getElementById('leaderboard-body');
+
+                if (error || !data?.length) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#999;">No rankings yet.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = '';
+                data.forEach((row, i) => {
+                    const tr = document.createElement('tr');
+                    const name = row.users
+                        ? `${row.users.name} ${row.users.surname}`
+                        : 'Unknown';
+                    tr.innerHTML = `
+                        <td>${i + 1}</td>
+                        <td>${name}</td>
+                        <td>${row.wins}</td>
+                        <td>${row.losses}</td>
+                        <td>${row.points}</td>`;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            // auth-guard sets currentUser; wait for it then load data
+            document.addEventListener('DOMContentLoaded', () => {
+                const interval = setInterval(() => {
+                    if (window.currentUser !== undefined) {
+                        clearInterval(interval);
+                        loadLeaderboard();
+                    }
+                }, 50);
             });
         </script>
-
     </body>
 </html>

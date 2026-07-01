@@ -22,38 +22,131 @@
                     <span class="user-avatar">&#9786;</span>
                 </li>
                 <li><a href="Leaderboard.html">LEADERBOARD</a></li>
-                <li><a href="home.html" class="nav-logout">LOGOUT</a></li>
+                <li><a href="#" class="nav-logout">LOGOUT</a></li>
             </ul>
         </nav>
 
         <!-- Registered Leagues Section -->
         <section class="hero hub-hero">
-
-            <div class="event-panel">
-
-                <!-- Panel Header -->
+            <div class="event-panel" style="width:720px;">
                 <div class="event-panel-header">
                     <span class="event-panel-title">REGISTERED LEAGUES</span>
                     <a href="Hub.html" class="event-home-btn" aria-label="Back to Hub">&#8962;</a>
                 </div>
-
-                <!-- Panel Content Area -->
                 <div class="event-panel-body">
-                    <!-- Registered league listings will go here -->
+                    <p id="unreg-msg" class="auth-msg" style="display:none;"></p>
+                    <table class="admin-table" id="registered-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>LEAGUE NAME</th>
+                                <th>GAME</th>
+                                <th>STATUS</th>
+                                <th>PLAYERS</th>
+                                <th>ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody id="registered-body">
+                            <tr><td colspan="6" style="text-align:center;color:#999;">Loading...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
-
             </div>
-
         </section>
 
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        <script src="js/supabase.js"></script>
+        <script src="js/auth-guard.js"></script>
+        <script src="js/logout.js"></script>
+        <script src="js/main.js" defer></script>
+
         <script>
-            const toggle = document.querySelector('.nav-toggle');
-            const navLinks = document.querySelector('.nav-links');
-            toggle.addEventListener('click', () => {
-                const open = navLinks.classList.toggle('nav-open');
-                toggle.setAttribute('aria-expanded', open);
+            async function loadRegisteredLeagues() {
+                const uid = window.currentUser.id;
+
+                const { data, error } = await sb
+                    .from('league_registrations')
+                    .select('league_id, leagues(id, name, game, status, player_count)')
+                    .eq('user_id', uid)
+                    .order('created_at');
+
+                const tbody = document.getElementById('registered-body');
+
+                if (error || !data?.length) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999;">You are not registered in any leagues yet.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = '';
+                data.forEach((row, i) => {
+                    const l = row.leagues;
+                    if (!l) return;
+                    const badgeClass = l.status === 'open' ? 'status-open' : 'status-closed';
+                    const tr = document.createElement('tr');
+                    tr.id = `reg-row-${l.id}`;
+                    tr.innerHTML = `
+                        <td>${i + 1}</td>
+                        <td>${l.name}</td>
+                        <td>${l.game}</td>
+                        <td><span class="status-badge ${badgeClass}">${l.status.toUpperCase()}</span></td>
+                        <td id="count-${l.id}">${l.player_count}</td>
+                        <td>
+                            <button
+                                class="btn-contact btn-reset"
+                                onclick="unregister(${l.id}, this)"
+                                style="padding:6px 18px;font-size:0.8rem;">
+                                LEAVE
+                            </button>
+                        </td>`;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            async function unregister(leagueId, btn) {
+                if (!confirm('Leave this league?')) return;
+                const uid = window.currentUser.id;
+                btn.disabled = true;
+
+                const { error } = await sb
+                    .from('league_registrations')
+                    .delete()
+                    .eq('user_id', uid)
+                    .eq('league_id', leagueId);
+
+                if (error) {
+                    showMsg('Failed to leave: ' + error.message, 'auth-error');
+                    btn.disabled = false;
+                    return;
+                }
+
+                // Remove the row from the table
+                document.getElementById(`reg-row-${leagueId}`)?.remove();
+
+                // If table is now empty, show placeholder
+                const tbody = document.getElementById('registered-body');
+                if (!tbody.rows.length) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999;">You are not registered in any leagues yet.</td></tr>';
+                }
+
+                showMsg('You have left the league.', 'auth-error');
+            }
+
+            function showMsg(text, cls) {
+                const el = document.getElementById('unreg-msg');
+                el.textContent   = text;
+                el.className     = `auth-msg ${cls}`;
+                el.style.display = 'block';
+                setTimeout(() => el.style.display = 'none', 4000);
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const interval = setInterval(() => {
+                    if (window.currentUser !== undefined) {
+                        clearInterval(interval);
+                        loadRegisteredLeagues();
+                    }
+                }, 50);
             });
         </script>
-
     </body>
 </html>

@@ -22,41 +22,27 @@
                     <span class="user-avatar">&#9786;</span>
                 </li>
                 <li><a href="Leaderboard.html">LEADERBOARD</a></li>
-                <li><a href="home.html" class="nav-logout">LOGOUT</a></li>
+                <li><a href="#" class="nav-logout">LOGOUT</a></li>
             </ul>
         </nav>
 
         <!-- Hub Section -->
         <section class="hero hub-hero">
             <div class="hub-grid">
-
-                <a href="OpenLeagues.html" class="hub-card hub-green">
-                    VIEW OPEN LEAGUES
-                </a>
-
-                <a href="UpcomingEvents.html" class="hub-card hub-blue">
-                    VIEW UPCOMING<br>TOURNAMENTS
-                </a>
-
-                <a href="RegisteredLeagues.html" class="hub-card hub-red">
-                    VIEW REGISTERED<br>LEAGUES
-                </a>
-
-                <a href="Contact.html" class="hub-card hub-yellow">
-                    CONTACT GAMING<br>ADMIN
-                </a>
-
+                <a href="OpenLeagues.html" class="hub-card hub-green">VIEW OPEN LEAGUES</a>
+                <a href="UpcomingEvents.html" class="hub-card hub-blue">VIEW UPCOMING<br>TOURNAMENTS</a>
+                <a href="RegisteredLeagues.html" class="hub-card hub-red">VIEW REGISTERED<br>LEAGUES</a>
+                <a href="Contact.html" class="hub-card hub-yellow">CONTACT GAMING<br>ADMIN</a>
             </div>
         </section>
 
-        <script>
-            const toggle = document.querySelector('.nav-toggle');
-            const navLinks = document.querySelector('.nav-links');
-            toggle.addEventListener('click', () => {
-                const open = navLinks.classList.toggle('nav-open');
-                toggle.setAttribute('aria-expanded', open);
-            });
-        </script>
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        <script src="js/supabase.js"></script>
+        <script src="js/auth-guard.js"></script>
+        <script src="js/logout.js"></script>
+        <script src="js/main.js" defer></script>
 
     </body>
 </html>
+
+<!--OJRrP4KP4UEY0MKK-->

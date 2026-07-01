@@ -22,38 +22,156 @@
                     <span class="user-avatar">&#9786;</span>
                 </li>
                 <li><a href="Leaderboard.html">LEADERBOARD</a></li>
-                <li><a href="home.html" class="nav-logout">LOGOUT</a></li>
+                <li><a href="#" class="nav-logout">LOGOUT</a></li>
             </ul>
         </nav>
 
         <!-- Open Leagues Section -->
         <section class="hero hub-hero">
-
-            <div class="event-panel">
-
-                <!-- Panel Header -->
+            <div class="event-panel" style="width:760px;">
                 <div class="event-panel-header">
                     <span class="event-panel-title">OPEN LEAGUES</span>
                     <a href="Hub.html" class="event-home-btn" aria-label="Back to Hub">&#8962;</a>
                 </div>
-
-                <!-- Panel Content Area -->
                 <div class="event-panel-body">
-                    <!-- Open league listings will go here -->
+                    <p id="reg-msg" class="auth-msg" style="display:none;"></p>
+                    <table class="admin-table" id="leagues-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>LEAGUE NAME</th>
+                                <th>GAME</th>
+                                <th>PLAYERS</th>
+                                <th>ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leagues-body">
+                            <tr><td colspan="5" style="text-align:center;color:#999;">Loading...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
-
             </div>
-
         </section>
 
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        <script src="js/supabase.js"></script>
+        <script src="js/auth-guard.js"></script>
+        <script src="js/logout.js"></script>
+        <script src="js/main.js" defer></script>
+
         <script>
-            const toggle = document.querySelector('.nav-toggle');
-            const navLinks = document.querySelector('.nav-links');
-            toggle.addEventListener('click', () => {
-                const open = navLinks.classList.toggle('nav-open');
-                toggle.setAttribute('aria-expanded', open);
+            async function loadOpenLeagues() {
+                const uid = window.currentUser.id;
+
+                // Fetch open leagues and the user's existing registrations in parallel
+                const [leaguesRes, regsRes] = await Promise.all([
+                    sb.from('leagues').select('id, name, game, player_count').eq('status', 'open').order('name'),
+                    sb.from('league_registrations').select('league_id').eq('user_id', uid)
+                ]);
+
+                const tbody = document.getElementById('leagues-body');
+
+                if (leaguesRes.error || !leaguesRes.data?.length) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#999;">No open leagues at the moment.</td></tr>';
+                    return;
+                }
+
+                // Build a set of league IDs the user is already registered in
+                const registered = new Set((regsRes.data || []).map(r => r.league_id));
+
+                tbody.innerHTML = '';
+                leaguesRes.data.forEach((league, i) => {
+                    const isRegistered = registered.has(league.id);
+                    const tr = document.createElement('tr');
+                    tr.id = `league-row-${league.id}`;
+                    tr.innerHTML = `
+                        <td>${i + 1}</td>
+                        <td>${league.name}</td>
+                        <td>${league.game}</td>
+                        <td id="count-${league.id}">${league.player_count}</td>
+                        <td>
+                            <button
+                                class="btn-contact ${isRegistered ? 'btn-registered' : 'btn-submit'}"
+                                onclick="toggleRegistration(${league.id}, this)"
+                                ${isRegistered ? 'data-registered="true"' : ''}
+                                style="padding:6px 18px;font-size:0.8rem;">
+                                ${isRegistered ? 'REGISTERED ✓' : 'REGISTER'}
+                            </button>
+                        </td>`;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            async function toggleRegistration(leagueId, btn) {
+                const uid       = window.currentUser.id;
+                const msgEl     = document.getElementById('reg-msg');
+                const isReg     = btn.dataset.registered === 'true';
+                const countEl   = document.getElementById(`count-${leagueId}`);
+                btn.disabled    = true;
+                msgEl.style.display = 'none';
+
+                if (isReg) {
+                    // Unregister
+                    const { error } = await sb
+                        .from('league_registrations')
+                        .delete()
+                        .eq('user_id', uid)
+                        .eq('league_id', leagueId);
+
+                    if (error) {
+                        showMsg('Failed to unregister: ' + error.message, 'auth-error');
+                        btn.disabled = false;
+                        return;
+                    }
+
+                    btn.textContent = 'REGISTER';
+                    btn.className   = 'btn-contact btn-submit';
+                    btn.dataset.registered = 'false';
+                    if (countEl) countEl.textContent = Math.max(0, parseInt(countEl.textContent) - 1);
+                    showMsg('You have unregistered from this league.', 'auth-error');
+
+                } else {
+                    // Register
+                    const { error } = await sb
+                        .from('league_registrations')
+                        .insert({ user_id: uid, league_id: leagueId });
+
+                    if (error) {
+                        // Unique constraint means already registered
+                        const msg = error.code === '23505'
+                            ? 'You are already registered for this league.'
+                            : 'Failed to register: ' + error.message;
+                        showMsg(msg, 'auth-error');
+                        btn.disabled = false;
+                        return;
+                    }
+
+                    btn.textContent = 'REGISTERED ✓';
+                    btn.className   = 'btn-contact btn-registered';
+                    btn.dataset.registered = 'true';
+                    if (countEl) countEl.textContent = parseInt(countEl.textContent) + 1;
+                    showMsg('Successfully registered!', 'auth-success');
+                }
+
+                btn.disabled = false;
+            }
+
+            function showMsg(text, cls) {
+                const el = document.getElementById('reg-msg');
+                el.textContent  = text;
+                el.className    = `auth-msg ${cls}`;
+                el.style.display = 'block';
+                setTimeout(() => el.style.display = 'none', 4000);
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const interval = setInterval(() => {
+                    if (window.currentUser !== undefined) {
+                        clearInterval(interval);
+                        loadOpenLeagues();
+                    }
+                }, 50);
             });
         </script>
-
     </body>
 </html>
